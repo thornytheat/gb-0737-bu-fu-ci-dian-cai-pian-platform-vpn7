@@ -25,7 +25,17 @@ class Archive:
                 CREATE TABLE IF NOT EXISTS reviews (
                     seq INTEGER PRIMARY KEY, run TEXT REFERENCES runs(id) NOT NULL, time TEXT NOT NULL, action TEXT NOT NULL
                 );
+                CREATE TABLE IF NOT EXISTS resume_receipts (
+                    seq INTEGER PRIMARY KEY, run TEXT REFERENCES runs(id) NOT NULL, receipt TEXT NOT NULL,
+                    time TEXT NOT NULL, body TEXT NOT NULL, UNIQUE (run, receipt)
+                );
+                CREATE TABLE IF NOT EXISTS resume_versions (
+                    seq INTEGER PRIMARY KEY, run TEXT REFERENCES runs(id) NOT NULL, version INTEGER NOT NULL,
+                    time TEXT NOT NULL, document TEXT NOT NULL, UNIQUE (run, version)
+                );
                 CREATE INDEX IF NOT EXISTS recent_runs ON runs(time DESC, id DESC);
+                CREATE INDEX IF NOT EXISTS resume_receipt_order ON resume_receipts(run, seq);
+                CREATE INDEX IF NOT EXISTS resume_version_order ON resume_versions(run, version);
             """)
 
     @contextmanager

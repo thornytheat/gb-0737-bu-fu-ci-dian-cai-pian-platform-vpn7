@@ -44,7 +44,7 @@ export function drawAxis(book, slip) {
   axis.replaceChildren(ruler, band, tag("p", line, `roll-status${book.held ? " held" : ""}`));
 }
 
-function receipt(slip, manifest, kerf) {
+function receipt(slip, manifest, kerf, resume = null) {
   const content = tag("div", "", "receipt");
   const head = tag("div", "", "receipt-head");
   head.append(tag("b", slip.serial), tag("span", slip.state, `stamp${slip.state === "封存" ? " held" : ""}`));
@@ -68,6 +68,24 @@ function receipt(slip, manifest, kerf) {
     }
     content.append(lines);
   }
+  if (resume) {
+    const board = tag("div", "", "resume-block");
+    const progress = resume.progress || {complete: 0, kerf_open: 0, scrap: 0, pending: 0};
+    board.append(tag("p", `续裁确认单第 ${resume.version} 版 · 已完成 ${progress.complete} 片 · 刀口未闭 ${progress.kerf_open} 片 · 半片作废 ${progress.scrap} 片 · 待裁 ${progress.pending} 片`, "receipt-meta"));
+    if (resume.resume) {
+      const target = resume.resume;
+      const where = target.kind === "kerf_finish" ? `补切到 ${target.next_cut_mm} mm` :
+        target.kind === "realign" ? `先在 ${target.next_cut_mm} mm 重建前缘，再续裁 ${target.piece}` :
+        `续裁 ${target.piece}，落刀 ${target.next_cut_mm} mm`;
+      board.append(tag("p", `下一刀：${where}`, "receipt-sources"));
+    } else {
+      board.append(tag("p", "本卷已无后续裁片。", "receipt-sources"));
+    }
+    const release = resume.release;
+    board.append(tag("p", release.ready ? `余料放行 ${release.unused_mm} mm` : `余料不放行：${(release.reasons || []).join(" / ")}`,
+      `receipt-sources${release.ready ? "" : " held"}`));
+    content.append(board);
+  }
   if (slip.hold_message) content.append(tag("p", slip.hold_message, "receipt-sources"));
   content.append(tag("p", [slip.source, ...slip.hold_refs].join(" / "), "receipt-sources"));
   const signature = tag("div", "", "signature");
@@ -76,11 +94,11 @@ function receipt(slip, manifest, kerf) {
   return content;
 }
 
-export function drawSlip(slip, manifest, kerf) {
-  at("slip-body").replaceChildren(slip ? receipt(slip, manifest, kerf) : tag("p", "请选择布卷。", "empty"));
+export function drawSlip(slip, manifest, kerf, resume = null) {
+  at("slip-body").replaceChildren(slip ? receipt(slip, manifest, kerf, resume) : tag("p", "请选择布卷。", "empty"));
   const printable = at("print-slip");
   printable.replaceChildren();
   if (slip && manifest) {
-    printable.append(tag("h1", "裁床签条"), receipt(slip, manifest, kerf));
+    printable.append(tag("h1", "裁床签条"), receipt(slip, manifest, kerf, resume));
   }
 }

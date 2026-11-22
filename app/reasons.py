@@ -12,6 +12,11 @@ MESSAGES = {
     "SEGMENT_TOO_SHORT": "无单段可容纳该裁片", "CAPACITY_USED": "可用段已由求解方案分配",
     "STALE_RUN": "样例、刀口或规则版本已变更", "REPLAY_DIFF": "重算方案与归档不同",
     "STORE_BUSY": "归档库暂忙", "FORM_INVALID": "参数无效，检查刀口值",
+    "CUT_OUTSIDE": "落刀位置超出布卷", "CUT_UNPLANNED": "刀口不在排版方案内",
+    "CUT_DUPLICATE": "该刀口已完成，不能重复落刀", "CUT_GAP": "前序刀口尚未完成，不能跳刀",
+    "CUT_BLOCKED": "刀口落入禁切区", "RECEIPT_CONFLICT": "同一回执号的内容与已登记记录不一致",
+    "CUT_EDGE": "半片作废后须先在片首重建前缘", "RECEIPT_LIMIT": "续裁回执数量超出上限",
+    "RESUME_VERSION_UNKNOWN": "续裁确认单版本不存在",
 }
 
 

@@ -14,7 +14,7 @@ const orderColumns = [column("订单号", (r) => r.id), column("布种", (r) => 
 const spanColumns = [column("起点 mm", (r) => r.start, true), column("终点 mm", (r) => r.end, true),
   column("长度 mm", (r) => r.end - r.start, true), column("依据", (r) => list(r.refs))];
 
-export function views(stage, data, activeRoll, history) {
+export function views(stage, data, activeRoll, history, resume = null) {
   const roll = data?.zones.rolls.find((row) => row.id === activeRoll);
   switch (stage) {
     case "intake": return [
@@ -64,8 +64,58 @@ export function views(stage, data, activeRoll, history) {
       ["归档历史", history, [column("批次号", (r) => ({text: r.id.slice(0, 12), run: r.id})), column("验布单", (r) => r.inputs.defects.file),
         column("刀口 mm", (r) => r.kerf_mm, true), column("片数", (r) => r.piece_count, true), column("归档 UTC", (r) => r.created_at)]],
     ];
+    case "resume": return resumeViews(resume, activeRoll);
     default: throw new Error("模块不存在");
   }
+}
+
+const resumeStatus = {complete: "已完成", kerf_open: "刀口未闭合", scrap: "半片作废", pending: "未落刀"};
+
+function pieceRows(sheet, roll) {
+  if (!sheet || !roll) return [];
+  return [
+    ...(sheet.completed || []).map((r) => ({...r, status: resumeStatus.complete, cut_mm: r.cut_mm})),
+    ...(sheet.kerf_open || []).map((r) => ({...r, status: resumeStatus.kerf_open, cut_mm: r.cut_mm})),
+    ...(sheet.interrupted || []).map((r) => ({...r, status: resumeStatus.scrap, cut_mm: r.cut_mm})),
+    ...(sheet.pending || []).map((r) => ({...r, status: resumeStatus.pending, cut_mm: "—"})),
+  ];
+}
+
+function resumeViews(sheet, activeRoll) {
+  if (!sheet) return [["续裁确认单", [], []]];
+  const current = sheet.rolls.find((row) => row.roll === activeRoll) || sheet.rolls[0];
+  const release = sheet.release;
+  return [
+    ["续裁确认单", sheet.rolls, [
+      column("签号", (r) => ({text: r.serial, roll: r.roll})), column("卷号", (r) => r.roll),
+      column("状态", (r) => r.state), column("已完片", (r) => r.completed.length, true),
+      column("刀口未闭", (r) => r.kerf_open.length, true), column("作废", (r) => r.interrupted.length, true),
+      column("待裁", (r) => r.pending.length, true),
+      column("下一刀 mm", (r) => r.resume?.next_cut_mm ?? "—", true),
+      column("余料放行", (r) => (r.release.ready ? `是 · ${r.release.unused_mm} mm` : `否 · ${r.release.reasons.join("/")}`)),
+    ]],
+    ["本卷裁片", pieceRows(current, current?.roll), [
+      column("裁片", (r) => r.piece), column("订单", (r) => r.order), column("片身 mm", (r) => interval([r.start, r.end]), true),
+      column("刀口终点 mm", (r) => r.kerf_end, true), column("落刀 mm", (r) => r.cut_mm, true),
+      column("状态", (r) => r.status), column("回执", (r) => r.receipt ?? "—"),
+    ]],
+    ["卷长对平", current ? [current] : [], [
+      column("卷号", (r) => r.roll), column("卷长 mm", (r) => r.reconciliation.amounts.length, true),
+      column("合格片 mm", (r) => r.reconciliation.amounts.finished_piece_mm, true),
+      column("刀口 mm", (r) => r.reconciliation.amounts.kerf_mm, true),
+      column("未闭刀口 mm", (r) => r.reconciliation.amounts.open_kerf_mm, true),
+      column("作废 mm", (r) => r.reconciliation.amounts.written_off_mm, true),
+      column("禁切 mm", (r) => r.reconciliation.amounts.blocked_mm, true),
+      column("待裁 mm", (r) => r.reconciliation.amounts.remaining_piece_mm, true),
+      column("未用 mm", (r) => r.reconciliation.amounts.unused_mm, true),
+      column("差额 mm", (r) => r.reconciliation.amounts.delta, true),
+    ]],
+    ["回执登记", sheet.receipts, [column("回执号", (r) => r.receipt), column("卷号", (r) => r.roll),
+      column("落刀 mm", (r) => list(r.cuts.map(String)), true), column("登记 UTC", (r) => r.time)]],
+    ["放行摘要", [{...release, version: sheet.version}], [column("确认单版本", (r) => r.version, true),
+      column("全部放行", (r) => (r.ready ? "是" : "否")), column("可放行卷", (r) => list(r.release_ready_rolls) || "—"),
+      column("待对平卷", (r) => list(r.waiting_rolls) || "—")]],
+  ];
 }
 
 export function drawTable(tab) {

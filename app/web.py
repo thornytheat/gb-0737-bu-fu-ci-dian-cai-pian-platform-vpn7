@@ -7,7 +7,7 @@ from app.config import ROOT, SAMPLES, VERSION
 router = APIRouter()
 templates = Jinja2Templates(directory=ROOT / "app/templates")
 MODULES = (("intake", "验布采信"), ("locate", "疵点定位"), ("zones", "禁切区间"), ("fit", "裁片配长"),
-           ("changeovers", "换卷核算"), ("ledger", "用布勾稽"), ("slips", "裁床签条"))
+           ("changeovers", "换卷核算"), ("ledger", "用布勾稽"), ("slips", "裁床签条"), ("resume", "续裁确认"))
 
 
 @router.get("/", response_class=HTMLResponse)

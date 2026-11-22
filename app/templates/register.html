@@ -15,5 +15,11 @@
       <button id="print" type="button" disabled>打印签条</button>
     </div>
     <div id="slip-body"><p class="empty">请选择布卷。</p></div>
+    <form id="receipt-form" class="receipt-form" hidden>
+      <label>回执号 <input id="receipt-id" name="receipt_id" autocomplete="off" required maxlength="80" placeholder="夜班-001"></label>
+      <label>落刀 mm <input id="receipt-cut" name="cut_mm" type="number" min="1" step="1" required placeholder="535"></label>
+      <button id="receipt-submit" type="submit">登记落刀</button>
+    </form>
+    <div id="resume-history" class="resume-history" hidden></div>
   </section>
 </div>

@@ -14,6 +14,7 @@
 | M5 换卷核算 | 确认领卷次序、实际坐标和欠料 | `GET /api/changeovers` | `app/modules/m5_changeovers/solver.py` `app/modules/m5_changeovers/placements.py` | `tests/test_changeovers.py` |
 | M6 用布勾稽 | 按卷审核切口守恒及源记录分流 | `GET /api/ledger` | `app/modules/m6_ledger/partition.py` `app/modules/m6_ledger/service.py` | `tests/test_ledger.py` |
 | M7 裁床签条 | 排版归档、同源重跑、按卷打印并下载卷宗 | `GET /api/slips` `POST /api/runs` | `app/modules/m7_slips/receipts.py` `app/modules/m7_slips/archiving.py` | `tests/test_slips.py` |
+| M8 续裁确认 | 登记断点后的落刀回执、核对每片完成情况和下一刀、对平刀口与禁切区后放行余料 | `GET /api/resume` `POST /api/resume/{id}/receipts` | `app/modules/m8_resume/planning.py` `app/modules/m8_resume/service.py` | `tests/test_resume.py` |
 
 ## 陷阱登记
 
@@ -33,6 +34,12 @@
 | TRAP-19 | R-001 两条带安全余量的疵区重叠 20 mm | 重复扣料或留出假缝 | 归并并集并合并源行 | `app/modules/m3_zones/intervals.py` | `tests/test_zones.py::test_overlapping_allowances_are_counted_once` |
 | TRAP-23 | R-005 的裁片和刀口刚好用尽到卷尾 | 漏计最后刀口或右端算两次 | 半开区间，最后刀口须完整容纳 | `app/modules/m5_changeovers/placements.py` | `tests/test_fit.py::test_kerf_exact_fit_succeeds_when_right_edge_is_exclusive` |
 | TRAP-26 | 已归档后改变源记录文件 | 陈旧重跑覆盖原裁片坐标 | 比较文件哈希及规则身份，返回 409 | `app/modules/m7_slips/archiving.py` | `tests/test_slips.py::test_stale_source_replay_is_rejected_without_rewriting_archive` |
+| TRAP-27 | 夜班最后一条落刀回执只切到片身一半 | 把半片当整片算完成，超领一件 | 片身内部的落刀整片作废并写入账，待裁数不减、余料不放行 | `app/modules/m8_resume/planning.py` | `tests/test_resume.py::test_cut_inside_piece_body_scraps_whole_piece_instead_of_counting_it_complete` |
+| TRAP-28 | 半片作废后直接跳到下一片刀口终点 | 切出一条比计划长的布条 | 先在下一片片首重建前缘才允许按片长落刀，否则 409 `CUT_EDGE` | `app/modules/m8_resume/planning.py` | `tests/test_resume.py::test_jumping_to_next_piece_kerf_after_scrap_is_refused_until_front_edge_is_cut` |
+| TRAP-29 | 落刀落在片身终点与刀口终点之间 | 刀口记成 5 mm，余料按已对平放行 | 单列为刀口未闭合，只补切到刀口终点才闭合并放行 | `app/modules/m8_resume/planning.py` | `tests/test_resume.py::test_cut_between_piece_end_and_kerf_end_leaves_kerf_open_and_blocks_release` |
+| TRAP-30 | 网络抖动后同一条落刀回执重发 | 重复计裁片与刀口 | 按回执号幂等回放，不新增事件或签条版本；同号异文 409 | `app/modules/m8_resume/service.py` | `tests/test_resume.py::test_same_receipt_replayed_does_not_add_pieces_kerfs_or_versions` |
+| TRAP-31 | 恢复失败后想回看断点前的签条 | 原地覆盖旧签条，已切记录丢失 | 确认单按版本只追加；首次落刀前先存第 0 版，旧版可只读回看 | `app/modules/m8_resume/service.py` `app/archive.py` | `tests/test_resume.py::test_versions_are_append_only_and_readable_after_restart` |
+| TRAP-32 | 封存卷或刀口未对平却整批放行 | 余料从仍有禁忌的卷上放出 | 放行逐卷判定；封存卷单列 `sealed_rolls`，不参与批次放行 | `app/modules/m8_resume/planning.py` | `tests/test_resume.py::test_held_roll_never_releases_and_blocks_batch_release` |
 
 ## 勾稽与局限
 
