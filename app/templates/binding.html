@@ -1,0 +1,13 @@
+<aside class="binding">
+  <a class="cover" href="/">
+    <span class="cover-stamp" aria-hidden="true">布</span>
+    <span>裁床卷宗<small>CUTTING REGISTER</small></span>
+  </a>
+  <nav aria-label="作业目录">
+    <p class="binding-title">作业目录</p>
+    {% for key, label in modules %}
+    <button type="button" data-view="{{ key }}" aria-pressed="{{ 'true' if key == 'zones' else 'false' }}">{{ label }}</button>
+    {% endfor %}
+  </nav>
+  <div class="binding-foot">长度单位 <b>mm</b></div>
+</aside>

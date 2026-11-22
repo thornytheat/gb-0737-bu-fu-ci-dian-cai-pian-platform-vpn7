@@ -1,0 +1,11 @@
+services:
+  app:
+    build: .
+    ports:
+      - "18426:18426"
+    environment:
+      FABRIC_DB: /opt/cutting/var/fabric.sqlite3
+    volumes:
+      - fabric-ledger:/opt/cutting/var
+volumes:
+  fabric-ledger:

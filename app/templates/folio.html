@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#ebe4cf">
+  <title>布幅疵点裁片台</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/static/theme.css">
+  <link rel="stylesheet" href="/static/folio.css">
+  <link rel="stylesheet" href="/static/receipt.css">
+  <script type="module" src="/static/desk.js"></script>
+</head>
+<body>
+<div class="folio">
+  {% include "binding.html" %}
+  <div class="leaf">
+    {% include "head.html" %}
+    <main class="work" id="work">
+      {% include "roll-axis.html" %}
+      {% include "register.html" %}
+    </main>
+    <footer class="footer">
+      <span>裁床卷宗 <b>{{ version }}</b></span>
+      <span id="sync-state" aria-live="polite">正在读取</span>
+      <a href="/docs">接口 ↗</a>
+    </footer>
+  </div>
+</div>
+<article id="print-slip" aria-label="打印签条"></article>
+</body>
+</html>

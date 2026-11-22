@@ -1,0 +1,28 @@
+.slip { position: relative; border-top: 3px double var(--line-strong); }
+.slip::after { content: ''; display: block; height: 6px; background: repeating-linear-gradient(90deg,
+  transparent 0 4px, var(--line) 4px 8px, transparent 8px 12px); opacity: .62; }
+.slip button { font-size: 11px; min-height: 25px; }
+.receipt { padding: 12px var(--pad); }
+.receipt-head { display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  padding-bottom: 8px; border-bottom: 1px dashed var(--line-strong); }
+.receipt-head b { font: 750 15px var(--font-num); }
+.stamp { border: 3px double var(--accent); color: var(--accent); padding: 2px 5px;
+  font: 750 15px/1.2 var(--font-title); letter-spacing: .08em; white-space: nowrap; }
+.stamp.held { color: var(--warn); border-color: var(--warn); }
+.receipt-meta, .receipt-sources { margin-top: 7px; font-size: 11px; color: var(--muted); overflow-wrap: anywhere; }
+.receipt dl { display: grid; grid-template-columns: 1fr auto; padding: 7px 0; border-bottom: 1px dashed var(--line-strong); }
+.receipt dl dt, .receipt dl dd { padding-block: 2px; }
+.receipt ol { margin-top: 8px; padding-left: 23px; font: 11px/1.7 var(--font-num); }
+.signature { display: flex; gap: 17px; margin-top: 10px; color: var(--muted); font-size: 11px; }
+#print-slip { display: none; }
+@media print {
+  @page { margin: 12mm; size: A5; }
+  body { background: white; color: black; }
+  .folio { display: none; }
+  #print-slip { display: block; }
+  #print-slip h1 { border-bottom: 3px double black; padding-bottom: 4mm; }
+  #print-slip .receipt { padding-inline: 0; }
+  #print-slip .stamp { border-color: black; color: black; }
+  #print-slip .receipt-head, #print-slip .receipt dl { border-color: black; }
+  #print-slip .signature { margin-top: 8mm; }
+}

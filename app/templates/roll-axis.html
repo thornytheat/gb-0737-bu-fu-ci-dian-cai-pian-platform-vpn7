@@ -1,0 +1,23 @@
+<section class="panel roll-panel" aria-labelledby="roll-title">
+  <div class="panel__head">
+    <div class="roll-title"><h2 id="roll-title">卷布轴</h2><span id="roll-badge">—</span></div>
+    <div id="roll-picker" class="roll-picker" role="group" aria-label="选卷"></div>
+  </div>
+  <div class="ruler-wrap">
+    <div id="axis" class="axis"><p class="empty">正在读取卷布坐标。</p></div>
+    <ul class="legend" aria-label="卷布标记">
+      <li><i class="swatch piece"></i>合格裁片</li>
+      <li><i class="swatch blocked"></i>禁切</li>
+      <li><i class="swatch kerf"></i>切口</li>
+      <li><i class="swatch unused"></i>未用段</li>
+    </ul>
+  </div>
+  <div class="kpis" aria-label="批次合计">
+    <div><span>卷长合计</span><b id="length">—</b></div>
+    <div><span>合格裁片</span><b id="piece">—</b></div>
+    <div><span>禁切</span><b id="blocked">—</b></div>
+    <div><span>切口</span><b id="kerf-total">—</b></div>
+    <div><span>未用段</span><b id="unused">—</b></div>
+    <div><span>差额 mm</span><b id="delta">—</b></div>
+  </div>
+</section>

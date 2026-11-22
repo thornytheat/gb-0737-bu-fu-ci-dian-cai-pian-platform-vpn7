@@ -1,0 +1,28 @@
+:root {
+  color-scheme: light;
+  --bg: #ebe4cf;
+  --paper: #faf6e8;
+  --panel: #f5efdc;
+  --binding: #e7ddbf;
+  --ink: #282619;
+  --muted: #665d43;
+  --line: #c8bb96;
+  --line-strong: #a49262;
+  --accent: #6d5d19;
+  --accent-ink: #fffbed;
+  --accent-wash: #e6d9a4;
+  --piece: #56613b;
+  --blocked: #9a4d36;
+  --kerf: #241b0d;
+  --unused: #e0d3ab;
+  --warn: #7d392b;
+  --good: #44532f;
+  --font-ui: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+  --font-title: 'Songti SC', 'Noto Serif CJK SC', SimSun, Georgia, serif;
+  --font-num: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  --row: 32px;
+  --gap: 15px;
+  --pad: 16px;
+  --radius: 1px;
+  --ease: 115ms;
+}

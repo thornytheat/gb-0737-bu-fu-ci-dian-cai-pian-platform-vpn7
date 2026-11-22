@@ -1,0 +1,18 @@
+<header class="masthead">
+  <div class="title">
+    <h1>布幅疵点裁片台</h1>
+    <p><span id="archive-state">样例预览</span><b id="archive-ref">—</b><time id="archive-date"></time></p>
+  </div>
+  <form id="plan-form" class="plan-form">
+    <label>验布单
+      <select id="sample" name="sample">
+        {% for key, label in samples.items() %}<option value="{{ key }}">{{ label }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>刀口 mm <input id="kerf" name="kerf_mm" type="number" min="1" max="20" step="1" value="5" required></label>
+    <button class="ink-btn" id="submit" type="submit">排版归档</button>
+    <button id="rerun" type="button" disabled>重跑</button>
+    <a id="export" aria-disabled="true">导出卷宗</a>
+  </form>
+</header>
+<div id="operation" class="operation" role="status" hidden></div>
